@@ -48,7 +48,7 @@ class IMU:
     def get_acc_angles(self):
         [ax, ay, az] = self.get_acc()
         phi = math.atan2(ay, math.sqrt(ax ** 2.0 + az ** 2.0))
-        theta = math.atan2(-ax, sqrt(ay ** 2.0 + az ** 2.0))
+        theta = math.atan2(-ax, math.sqrt(ay ** 2.0 + az ** 2.0))
         return [phi, theta]
       
     def read_byte(self, reg_adr):
