@@ -23,6 +23,8 @@ print("Calculating average gyro bias...")
 phi_hat = 0.0
 theta_hat = 0.0
 
+print("Running...")
+
 # Measured sampling time
 dt = 0.0
 start_time = time()
@@ -49,6 +51,6 @@ for i in range(N):
     theta_hat = (1 - alpha) * (theta_hat + dt * theta_dot) + alpha * theta_hat_acc   
     
     # Display results
-    print("Phi: + " str(round(phi_hat * 180.0 / pi, 1)) + " | Theta: " + str(round(theta_hat * 180.0 / pi, 2)))
-    
+    print("Phi: " + str(round(phi_hat * 180.0 / pi, 1)) + " | Theta: " + str(round(theta_hat * 180.0 / pi, 1)))
+
     sleep(sleep_time)
