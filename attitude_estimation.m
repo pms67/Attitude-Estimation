@@ -12,47 +12,48 @@ dt = 0.0185;
 phi_hat_acc = atan2(Ay, sqrt(Ax .^ 2 + Az .^ 2)) * 180.0 / pi;
 theta_hat_acc = atan2(-Ax, sqrt(Ay .^ 2 + Az .^ 2)) * 180.0 / pi;
 
-% Optional: Filter accelerometer data
-accFilter = false;
-
-if (accFilter)
-    windowSize = 20;
-    b = (1/windowSize) * ones(1, windowSize);
-    a = 1;
-    phi_hat_acc = filter(b, a, phi_hat_acc);
-    theta_hat_acc = filter(b, a, theta_hat_acc);
-end
-
 % Gyroscope only
 phi_hat_gyr = zeros(1, length(t));
 theta_hat_gyr = zeros(1, length(t));
 
-% Optional: Filter gyroscope data
-gyrFilter = false;
-
-if (gyrFilter)
-    windowSize = 20;
-    b = (1/windowSize) * ones(1, windowSize);
-    a = 1;
-    phi_hat_gyr = filter(b, a, phi_hat_gyr);
-    theta_hat_gyr = filter(b, a, theta_hat_gyr);
-end
-
 for i = 2:length(t)
-   phi_hat_gyr(i) = phi_hat_gyr(i - 1) + Gx(i) * dt;
-   theta_hat_gyr(i) = theta_hat_gyr(i - 1) + Gy(i) * dt;
+   p = Gx(i) * pi / 180.0;
+   q = Gy(i) * pi / 180.0;
+   r = Gz(i) * pi / 180.0;
+   
+   phi_hat = phi_hat_gyr(i - 1);
+   theta_hat = theta_hat_gyr(i - 1);
+    
+   phi_hat_gyr(i) = phi_hat_gyr(i - 1) + dt * (p + sin(phi_hat) * tan(theta_hat) * q + cos(phi_hat) * tan(theta_hat) * r);
+   theta_hat_gyr(i) = theta_hat_gyr(i - 1) + dt * (cos(phi_hat) * q - sin(phi_hat) * r);
+   
+   %phi_hat_gyr(i) = phi_hat_gyr(i - 1) + Gx(i) * dt;
+   %theta_hat_gyr(i) = theta_hat_gyr(i - 1) + Gy(i) * dt;
 end
+
+phi_hat_gyr = phi_hat_gyr * 180.0 / pi;
+theta_hat_gyr = theta_hat_gyr * 180.0 / pi;
 
 % Complimentary Filter
-alpha = 0.1;
+alpha = 0.5;
 
 phi_hat_complimentary = zeros(1, length(t));
 theta_hat_complimentary = zeros(1, length(t));
 
 for i=2:length(t)
 
-    phi_hat_complimentary(i) = (1 - alpha) * (phi_hat_complimentary(i - 1) + Gx(i) * dt) + alpha * phi_hat_acc(i);
-    theta_hat_complimentary(i) = (1 - alpha) * (theta_hat_complimentary(i - 1) + Gy(i) * dt) + alpha * theta_hat_acc(i);
+    p = Gx(i) * pi / 180.0;
+    q = Gy(i) * pi / 180.0;
+    r = Gz(i) * pi / 180.0;
+   
+    phi_hat = phi_hat_complimentary(i - 1);
+    theta_hat = theta_hat_complimentary(i - 1);
+    
+    phi_hat_gyr_comp = phi_hat_complimentary(i - 1) + dt * (p + sin(phi_hat) * tan(theta_hat) * q + cos(phi_hat) * tan(theta_hat));
+    theta_hat_gyr_comp = theta_hat_complimentary(i - 1) + dt * (cos(phi_hat) * q - sin(phi_hat) * r);
+       
+    phi_hat_complimentary(i) = (1 - alpha) * (phi_hat_gyr_comp) + alpha * phi_hat_acc(i);
+    theta_hat_complimentary(i) = (1 - alpha) * (theta_hat_gyr_comp) + alpha * theta_hat_acc(i);
     
 end
 
@@ -72,9 +73,20 @@ kal_theta_hat = zeros(1, length(t));
 kal_bias_theta = zeros(1, length(t));
 
 for i=2:length(t)
+    
+    p = Gx(i) * pi / 180.0;
+    q = Gy(i) * pi / 180.0;
+    r = Gz(i) * pi / 180.0;
+   
+    phi_hat = kal_phi_hat(i - 1);
+    theta_hat = kal_theta_hat(i - 1);
+    
+    phi_dot = p + sin(phi_hat) * tan(theta_hat) * q + cos(phi_hat) * tan(theta_hat) * r;
+    theta_dot = cos(phi_hat) * q - sin(phi_hat) * r;
+       
    
     % Predict
-    state_estimate = A * state_estimate + B * [Gx(i) Gy(i)]';
+    state_estimate = A * state_estimate + B * [phi_dot theta_dot]';
     P = A * P * A' + Q;
     
     % Update
