@@ -10,11 +10,11 @@ T = 0.01;
 noise_std = 0.5;
 
 % Time vector
-tg = (0:(N-1)) * T;
+t = (0:(N-1)) * T;
 
 % True states
-theta = exp(-tg) .* sin(2 * pi * tg);
-theta_dot = exp(-tg) .* (2 * pi * cos(2 * pi * tg) - sin(2 * pi * tg));
+theta = exp(-t) .* sin(2 * pi * t);
+theta_dot = exp(-t) .* (2 * pi * cos(2 * pi * t) - sin(2 * pi * t));
 
 % Noisy gyro measurements
 theta_dot_noise = theta_dot + noise_std * randn(1, N);
@@ -26,7 +26,7 @@ for i=2:N
    theta_hat(i) = theta_hat(i - 1) + theta_dot_noise(i) * T;
 end
 
-plot(tg, theta, tg, theta_hat)
+plot(t, theta, t, theta_hat)
 xlabel('Time (s)')
 ylabel('Theta (deg)')
 title('Gyro Drift')
