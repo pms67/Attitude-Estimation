@@ -1,8 +1,7 @@
 % Gyroscopic Drift Demonstration
 %
-% Author: Philip Salmony
+% Author: Philip Salmony [pms67@cam.ac.uk]
 % Date: 2 August 2018
-% Email: philip.salmony@gmail.com
 
 % Simulation parameters
 N = 1000;
