@@ -28,10 +28,11 @@ N = 100
 phi_offset = 0.0
 theta_offset = 0.0
 
-for i in range(N);
+for i in range(N):
     [phi_acc, theta_acc] = imu.get_acc_angles()
     phi_offset += phi_acc
-    theta_offset += theta_offset
+    theta_offset += theta_acc
+    sleep(sleep_time)
 
 phi_offset = float(phi_offset) / float(N)
 theta_offset = float(theta_offset) / float(N)
