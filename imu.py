@@ -15,6 +15,7 @@ class IMU:
         
         print("[IMU] Initialised.")
     
+    # rad/s
     def get_gyro_bias(self, N=100):
         bx = 0.0
         by = 0.0
@@ -29,18 +30,21 @@ class IMU:
             
         return [bx / float(N), by / float(N), bz / float(N)]            
         
+    # rad/s
     def get_gyro(self):
-        gx = self.read_word_2c(0x43) / 131.0
-        gy = self.read_word_2c(0x45) / 131.0
-        gz = self.read_word_2c(0x47) / 131.0
+        gx = self.read_word_2c(0x43) * math.pi / (180.0 * 131.0)
+        gy = self.read_word_2c(0x45) * math.pi / (180.0 * 131.0)
+        gz = self.read_word_2c(0x47) * math.pi / (180.0 * 131.0)
         return [gx, gy, gz]        
         
+    # m/s^2
     def get_acc(self):
         ax = self.read_word_2c(0x3b) / 16384.0
         ay = self.read_word_2c(0x3d) / 16384.0
         az = self.read_word_2c(0x3f) / 16384.0
         return [ax, ay, az]
     
+    # rad
     def get_acc_angles(self):
         [ax, ay, az] = self.get_acc()
         phi = math.atan2(ay, math.sqrt(ax ** 2.0 + az ** 2.0))
