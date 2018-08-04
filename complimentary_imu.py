@@ -5,7 +5,7 @@
 
 from imu import *
 from time import sleep, time
-from math import sin, cos, tan
+from math import sin, cos, tan, pi
 
 imu = IMU()
 
@@ -16,7 +16,7 @@ sleep_time = 0.01
 # Filter coefficient
 alpha = 0.1
 
-print("Getting gyro bias...")
+print("Calculating average gyro bias...")
 [bx, by, bz] = imu.get_gyro_bias(200)
 
 # Complimentary filter estimates
@@ -48,6 +48,7 @@ for i in range(N):
     phi_hat = (1 - alpha) * (phi_hat + dt * phi_dot) + alpha * phi_hat_acc
     theta_hat = (1 - alpha) * (theta_hat + dt * theta_dot) + alpha * theta_hat_acc   
     
-    print("Phi: + " str(round(phi_hat, 1)) + " | Theta: " + str(round(theta_hat, 2)))
+    # Display results
+    print("Phi: + " str(round(phi_hat * 180.0 / pi, 1)) + " | Theta: " + str(round(theta_hat * 180.0 / pi, 2)))
     
     sleep(sleep_time)
