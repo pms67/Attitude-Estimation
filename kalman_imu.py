@@ -58,7 +58,7 @@ while True:
     
     # Gey gyro measurements and calculate Euler angle derivatives
     [p, q, r] = imu.get_gyro()
-    phi_dot = p + sin(phi_hat) * tan(theta_hat) * q + cos(phi_hat) * tan(theta_hat) * q
+    phi_dot = p + sin(phi_hat) * tan(theta_hat) * q + cos(phi_hat) * tan(theta_hat) * r
     theta_dot = cos(phi_hat) * q - sin(phi_hat) * r
 
     # Kalman filter
