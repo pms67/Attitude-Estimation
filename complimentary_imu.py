@@ -43,7 +43,7 @@ for i in range(N):
     r -= bz
     
     # Calculate Euler angle derivatives 
-    phi_dot = p + sin(phi_hat) * tan(theta_hat) * q + cos(phi_hat) * tan(theta_hat) * q
+    phi_dot = p + sin(phi_hat) * tan(theta_hat) * q + cos(phi_hat) * tan(theta_hat) * r
     theta_dot = cos(phi_hat) * q - sin(phi_hat) * r
     
     # Update complimentary filter
